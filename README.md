@@ -1,4 +1,11 @@
-woocommerce-invoice-creator
-===========================
+Configuration
+====
+#Copy 'factuursturen' folder to your wordpress plugins folder.
+#
 
-This is wordpress plugin that connects woocommerce with the dutch platform factuursturen.nl, where you can do your administration.
+
+Errors
+=====
+#call to curl\_init not defined
+$ sudo apt-get install php5-curl
+
