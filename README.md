@@ -11,5 +11,6 @@ Configuration
 Errors
 =====
 1. call to curl\_init not defined
+
     $ sudo apt-get install php5-curl
 
