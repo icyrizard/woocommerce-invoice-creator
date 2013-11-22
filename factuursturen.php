@@ -2,8 +2,7 @@
 /* Plugin Name: factuursturen
 Plugin URI:
 Description: Sends invoice to factuursturen.nl
-Version: 4.2
-Author: Richard Torenvliet
+Version: 5.1
 Author URI: http://www.sponiza.nl
 License: GPLv2 or later
 */
@@ -34,6 +33,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
             api_version VARCHAR(16) DEFAULT 'v0' NOT NULL,
             api_url VARCHAR(256) DEFAULT 'https://www.factuursturen.nl/api/' NOT NULL,
             username VARCHAR(32) DEFAULT '' NOT NULL,
+            exclude_custom_fields VARCHAR(64) DEFAULT '',
             textinvoice VARCHAR(128) DEFAULT 'Thanks for purchasing, this is your invoice' NOT NULL,
             UNIQUE KEY id (id)
             );";

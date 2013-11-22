@@ -17,6 +17,7 @@ function process_factuursturen_options(){
         "api_version" => '',
         "username" => '',
         "textinvoice" => '',
+        "exclude_custom_fields" => '',
     );
     error_log(var_export($options,true), 0);
 
@@ -66,7 +67,7 @@ function factuursturenplugin_options() {
 
     $options = $wpdb->get_row( $wpdb->prepare("
         SELECT 	    *
-        FROM {$wpdb->prefix}factuursturen_settings;")
+        FROM {$wpdb->prefix}factuursturen_settings;",0)
     );
 
         echo '<div class="wrap">';
@@ -88,13 +89,17 @@ function factuursturenplugin_options() {
         <input type='text' name='api_url' size="64" value='<?php echo
                 esc_html($options->api_url); ?>' /> </br>
         <label style="width:8em; display: block; float: left; line-height:
-                1.8em;"  >API username</label>
+                1.8em;"  >Api username</label>
         <input type='text' name='username' size="32" value='<?php echo
                 esc_html($options->username); ?>'/></br>
         <label style="width:8em; display: block; float: left; line-height:
                 1.8em;" >API version</label>
         <input type='text' name='api_version' size="16" value='<?php echo
                 esc_html($options->api_version); ?>'/></br>
+        <label style="width:8em; display: block; float: left; line-height:
+                1.8em;" >Exlude custom fields, insert like: customfield;illigalflag</label>
+        <input type='text' name='exclude_custom_fields' size="32" value='<?php echo
+                esc_html($options->exclude_custom_fields); ?>'/></br>
         <label style="width:8em; display: block; float: left; line-height:
                 1.8em;" >Text Invoice</label>
         <textarea name='textinvoice' rows="3" cols="32 "size="128"
