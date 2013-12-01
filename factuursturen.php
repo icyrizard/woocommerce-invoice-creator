@@ -2,7 +2,7 @@
 /* Plugin Name: factuursturen
 Plugin URI:
 Description: Sends invoice to factuursturen.nl
-Version: 5.1
+Version: 5.2
 Author URI: http://www.sponiza.nl
 License: GPLv2 or later
 */
@@ -55,6 +55,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
     }
 
     register_activation_hook(__FILE__, 'factuursturen_activation');
-    register_deactivation_hook(__FILE__, 'factuursturen_deactivation');
+   // register_deactivation_hook(__FILE__, 'factuursturen_deactivation');
+    register_uninstall_hook(__FILE__, 'factuursturen_deactivation');
 }
 ?>

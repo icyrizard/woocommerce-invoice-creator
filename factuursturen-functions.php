@@ -132,9 +132,9 @@
                 /**
                  * Get fields, filter out vars with underscores and
                  * total_sales */
-                foreach(get_post_custom($p['product_id']) as $key => $value){
+                foreach($p['item_meta'] as $key => $value){
                     /* ignore if exclude fields */
-                    if ( in_array($key, $exclude_fields)){
+                    if (in_array($key, $exclude_fields)){
                         continue;
                     }
                     /**
@@ -149,11 +149,9 @@
                 array_push($product_lines, $p_line);
             }
 
-            //Sponiza lines send costs
             $s_line = array(
                 "amount" => "1",
-                "description" => "Verzendkosten",
-                //"tax_rate" => "21.00",
+                "description" => "Send costs",
                 "tax_rate" => number_format((float)fspl_get_shiptax_rates(),2,'.',''),
                 "price" => $order->get_shipping(),
             );
@@ -163,7 +161,6 @@
                 'clientnr' => $clientnr,
                 'action' => 'send',
                 'reference' => array(
-                    'line1' => $cred->textinvoice,
                 ),
                 'lines' => $product_lines,
                 'sendmethod' => 'email',

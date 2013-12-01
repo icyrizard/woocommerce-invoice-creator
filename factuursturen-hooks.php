@@ -80,30 +80,56 @@ function factuursturenplugin_options() {
     <form name='factuursturen-options' method='post'
           action='admin-post.php'>
         <input type="hidden" name="action" value="factuursturen" />
-        <label style="width:8em; display: block; float: left; line-height:
-                1.8em;">API key</label>
-        <input type='text' name='api_key' size="64" value='<?php echo
-                esc_html($options->api_key); ?>'/></br>
-        <label style="width:8em; display: block; float: left; line-height:
-                1.8em;" >API url</label>
-        <input type='text' name='api_url' size="64" value='<?php echo
-                esc_html($options->api_url); ?>' /> </br>
-        <label style="width:8em; display: block; float: left; line-height:
-                1.8em;"  >Api username</label>
-        <input type='text' name='username' size="32" value='<?php echo
-                esc_html($options->username); ?>'/></br>
-        <label style="width:8em; display: block; float: left; line-height:
-                1.8em;" >API version</label>
-        <input type='text' name='api_version' size="16" value='<?php echo
-                esc_html($options->api_version); ?>'/></br>
-        <label style="width:8em; display: block; float: left; line-height:
-                1.8em;" >Exlude custom fields, insert like: customfield;illigalflag</label>
-        <input type='text' name='exclude_custom_fields' size="32" value='<?php echo
-                esc_html($options->exclude_custom_fields); ?>'/></br>
-        <label style="width:8em; display: block; float: left; line-height:
-                1.8em;" >Text Invoice</label>
-        <textarea name='textinvoice' rows="3" cols="32 "size="128"
-            value=''><?php echo esc_html($options->textinvoice);?></textarea>
+        <table>
+           <tr>
+              <td width="25%">
+                 API key
+              </td>
+              <td width="75%">
+                 <input type='text' name='api_key' size="64" value='<?php echo esc_html($options->api_key); ?>'/>
+              </td>
+           </tr>
+           <tr>
+              <td>
+                 API url
+              </td>
+              <td>
+                 <input type='text' name='api_url' size="64" value='<?php echo esc_html($options->api_url); ?>' />
+              </td>
+           </tr>
+           <tr>
+              <td>
+                 Gebruikersnaam factuursturen.nl
+              </td>
+              <td>
+                 <input type='text' name='username' size="32" value='<?php echo esc_html($options->username); ?>'/>
+              </td>
+           </tr>
+           <tr>
+              <td>
+                 API versie
+              </td>
+              <td>
+                 <input type='text' name='api_version' size="16" value='<?php echo esc_html($options->api_version); ?>'/>
+              </td>
+           </tr>
+           <tr>
+              <td>
+                 Uitsluiting variaties producten op factuur. Meerdere waarden scheiden met ;
+              </td>
+              <td>
+                 <input type='text' name='exclude_custom_fields' size="32" value='<?php echo esc_html($options->exclude_custom_fields); ?>'/>
+              </td>
+           </tr>
+           <tr>
+              <td>
+                 Variabele tekst factuur
+              </td>
+              <td>
+                 <textarea name='textinvoice' rows="3" cols="32 "size="128" value=''><?php echo esc_html($options->textinvoice);?></textarea>
+              </td>
+           </tr>
+        </table>
         <p class="submit">
             <input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Save Changes') ?>" />
         </p>
