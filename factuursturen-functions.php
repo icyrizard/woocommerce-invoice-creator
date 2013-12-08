@@ -132,7 +132,7 @@
                 /**
                  * Get fields, filter out vars with underscores and
                  * total_sales */
-                foreach($p['item_meta'] as $key => $value){
+                foreach(get_post_custom($p['product_id']) as $key => $value){
                     /* ignore if exclude fields */
                     if (in_array($key, $exclude_fields)){
                         continue;
