@@ -127,7 +127,6 @@ function fspl_get_clientnr($order){
     $request = fspl_set_connection("clients", "GET");
     $request->execute();
     $result = $request->getResponseBody();
-    elog($result);
 
     /* add new client if non-existing */
     if(($clientnr = fspl_user_exists($result, $order)) == -1){
