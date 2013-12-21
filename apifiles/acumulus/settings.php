@@ -21,7 +21,6 @@ $API_NAME = "Acumulus";
 //$TABLE_NAME = "acumulus";
 
 $TABLE_FIELDS = array(
-        "api_name" => "VARCHAR(32) DEFAULT '$API_NAME' NOT NULL",
         "api_url" => "VARCHAR(128) DEFAULT 'https://api.sielsystems.nl/acumulus/stable/' NOT NULL",
         "contract_code" => "VARCHAR(16) DEFAULT '' NOT NULL",
         "username" => "VARCHAR(32) DEFAULT '' NOT NULL",

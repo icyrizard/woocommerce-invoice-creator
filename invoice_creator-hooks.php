@@ -2,8 +2,6 @@
 /**
 * The hooks of the plugin, hook into the admin page.
 */
-
-$SETTINGS_FILE = "apifiles/factuursturen/settings.php";
 include_once($SETTINGS_FILE);
 include_once("invoice_creator-common.php");
 

@@ -12,9 +12,16 @@
 /**
  * Check if WooCommerce is active
  **/
+if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
+        'woocommerce.php',  apply_filters('active_plugins',
+            get_option('active_plugins')))) {
 
-$SETTINGS_FILE = "apifiles/factuursturen/settings.php";
-if (in_array('woocommerce' . DIRECTORY_SEPARATOR. 'woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+    /** This global variable needs to be set to the settings file of
+     * your api in the directory apifiles.
+     * Note that the location really doesn't matter just that the globals
+     * are set correctly */
+    global $SETTINGS_FILE;
+    $SETTINGS_FILE = "apifiles/factuursturen/settings.php";
 
     include_once('invoice_creator-hooks.php');
     function invoice_creator_activation() {
@@ -46,6 +53,7 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR. 'woocommerce.php', apply_filte
             textinvoice VARCHAR(128) DEFAULT 'Thanks for purchasing, this is your invoice' NOT NULL,
             UNIQUE KEY id (id)
         );";
+        error_log($sql);
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -71,18 +79,15 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR. 'woocommerce.php', apply_filte
     }
 
     function invoice_creator_deactivation() {
-        global $SETTINGS_FILE;
-        include_once($SETTINGS_FILE);
-        global $wpdb, $TABLE_NAME;
-
-        $table = $wpdb->prefix. $TABLE_NAME;
+        global $wpdb;
+        $table = $wpdb->prefix . 'invoice_creator';
         $wpdb->query("DROP TABLE IF EXISTS $table");
     }
 
     register_activation_hook(__FILE__, 'invoice_creator_activation');
     register_uninstall_hook(__FILE__, 'invoice_creator_deactivation');
-    add_action('wp_head', 'call_send_invoice');
-//    register_deactivation_hook( __FILE__, 'invoice_creator_deactivation' );
+    register_deactivation_hook( __FILE__, 'invoice_creator_deactivation' );
+    add_action('woocommerce_order_status_completed', 'call_send_invoice');
 }
 
 ?>

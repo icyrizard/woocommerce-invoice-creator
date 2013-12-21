@@ -5,10 +5,8 @@
 * use functions that get information from woocommerce.
 *
 */
-
-//$SETTINGS_FILE = "apifiles/factuursturen/settings.php";
-include_once("settings.php");
 include_once($SETTINGS_FILE);
+
 /* store credentials, only done after the first call*/
 $cred = null;
 
