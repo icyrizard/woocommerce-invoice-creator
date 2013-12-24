@@ -142,7 +142,6 @@ function fspl_get_clientnr($order){
 
 /* send invoice to factuursturen.nl. */
 function invoice_creator_send_invoice($order_id){
-    $order_id = 30;
     if(!$order_id){
         return;
     }
