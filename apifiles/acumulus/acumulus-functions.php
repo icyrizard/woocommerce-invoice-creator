@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Acumulus functions to send the invoice package to the Acumulus API.
  */
@@ -17,18 +16,19 @@ function acm_build_url($api_section){
     $url_list = array(
         "invoices" => "invoices/invoice_add.php",
     );
+
     return $c->api_url . $url_list[$api_section];
 }
 
-/* add header with credentials */
+/* add header with credentials, used for authentication. */
 function acm_add_header($xml_body){
     $cred = invc_get_credentials();
     return "<?xml version='1.0' encoding='UTF-8'?>
     <myxml>
         <contract>
-            <contractcode>$cred->contract_code</contractcode>
-            <username>$cred->username</username>
-            <password>$cred->password</password>
+            <contractcode><![CDATA[$cred->contract_code]]></contractcode>
+            <username><![CDATA[$cred->username]]></username>
+            <password><![CDATA[$cred->password]]></password>
             <emailonerror></emailonerror>
             <emailonwarning></emailonwarning>
         </contract>
@@ -39,23 +39,25 @@ function acm_add_header($xml_body){
     return $xml_body;
 }
 
-
 /* generate product lines xml list from array */
 function acm_product_lines_xml($product_lines){
     $p_xml = "";
     foreach($product_lines as $p){
         $p_xml .= "<line>";
-        $p_xml .= "<itemnumber>". $p['product_id'] ."</itemnumber>";
-        $p_xml .= "<product>". $p['description']. "</product>";
-        $p_xml .= "<unitprice>". $p['price'] . "</unitprice>";
-        $p_xml .= "<quantity>". $p["amount"] ."</quantity>";
+        $p_xml .= "<itemnumber><![CDATA[". $p['product_id'] ."]]></itemnumber>";
+        $p_xml .= "<product><![CDATA[". $p['description']. "]]></product>";
+        $p_xml .= "<unitprice><![CDATA[". $p['price'] . "]]></unitprice>";
+        $p_xml .= "<quantity><![CDATA[". $p["amount"] ."]]></quantity>";
         $p_xml .= "<costprice></costprice>"; # not used, see API doc.
         $p_xml .= "</line>";
     }
 
     return $p_xml;
 }
-
+/**
+ * Create invoice body for acumulus, see acumulus api for fully
+ * specification of this xml body.
+ */
 function acm_create_invoice_body($order){
     $cred = invc_get_credentials();
 
@@ -66,26 +68,27 @@ function acm_create_invoice_body($order){
 
     $xml_body = "<customer>
         <type>1</type>
-        <fullname>" . invc_get_fullname($order) ." </fullname>
-        <address1>$order->billing_address_1</address1>
-        <address2>$order->billing_address_2</address2>
-        <postalcode>$order->billing_postcode</postalcode>
-        <city>$order->city</city>
-        <countrycode>". $order->billing_country ."</countrycode>
-        <telephone>$order->billing_phone</telephone>
-        <email>$order->billing_email</email>
+        <fullname><![CDATA[".invc_get_fullname($order)."]]></fullname>
+        <companyname1><![CDATA[$order->billing_company]]></companyname1>
+        <address1><![CDATA[$order->billing_address_1]]></address1>
+        <address2><![CDATA[$order->billing_address_2]]></address2>
+        <postalcode><![CDATA[$order->billing_postcode]]></postalcode>
+        <city><![CDATA[$order->billing_city]]></city>
+        <countrycode><![CDATA[". $order->billing_country ."]]></countrycode>
+        <telephone><![CDATA[$order->billing_phone]]></telephone>
+        <email><![CDATA[$order->billing_email]]></email>
         <invoice>
             <concept>0</concept>
-            <issuedate>".date('Y-m-d') ."</issuedate>
+            <issuedate><![CDATA[".date('Y-m-d') ."]]></issuedate>
             <paymentstatus>2</paymentstatus>
-            <paymentdate>" .date('Y-m-d') ."</paymentdate>
-            <description>$cred->textinvoice</description>
+            <paymentdate><![CDATA[" .date('Y-m-d') ."]]></paymentdate>
+            <description>$<![CDATA[$cred->textinvoice]]></description>
             $product_list_xml
             <emailaspdf>
-                <emailto>$order->billing_email</emailto>
-                <emailfrom>" . get_bloginfo('admin_email') ." </emailfrom>
-                <subject>Bevestiging aankoop ". $order->get_order_number() ."</subject>
-                <message>Bevestiging aankoop ". $order->get_order_number() ."</message>
+                <emailto><![CDATA[$order->billing_email]]></emailto>
+                <emailfrom><![CDATA[" . get_bloginfo('admin_email') ."]]></emailfrom>
+                <subject><![CDATA[Bevestiging aankoop ". $order->get_order_number() ."]]></subject>
+                <message><![CDATA[Bevestiging aankoop ". $order->get_order_number() ."]]></message>
             </emailaspdf>
         </invoice>
     </customer>";
@@ -103,16 +106,17 @@ function acm_send_msg($xml_string, $url){
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, "xmlstring=$xml_string");
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_exec($ch);
+    if(curl_exec($ch) === false){
+        throw new Exception("Error in msg sending. Make sure host is available.");
+    }
+
     curl_close($ch);
 }
 
 /* msg is send after order is set to paid */
 function invoice_creator_send_invoice($order_id){
-    $order_id = 30;
-    if(!$order_id){
+    if(!$order_id)
         return;
-    }
 
     $order = new WC_Order($order_id);
 
@@ -120,6 +124,10 @@ function invoice_creator_send_invoice($order_id){
         /* get client nmr */
         $invoice = acm_create_invoice_body($order);
         $msg = acm_add_header($invoice);
+        elog($msg);
+
+        $PLUGIN_DIR = dirname(dirname(dirname(__FILE__)));
+        file_put_contents($PLUGIN_DIR . "/xmlfilev2.xml", formatXmlString($msg));
 
         /* create request object */
         $url = acm_build_url('invoices');
@@ -128,7 +136,12 @@ function invoice_creator_send_invoice($order_id){
         acm_send_msg($msg, $url);
     } catch(Exception $e) {
         error_log('Caught Exception: ' . $e->getMessage(), 0);
+        return False;
     }
+
+    return True;
+
+    error_log("Invoice is sent.", 0);
 }
 
 ?>

@@ -51,24 +51,14 @@ function invc_get_credentials(){
 * obtained via the database. Default tax is 21, provide an accurate
 * tax rate in the woocommerce -> settings -> Tax and select it when
 * creating a product.
+*
+* This function need to be fully defined at a later point. There a some
+* issues in woocommerce that do not catch all cases. So for simplicity
+* this function is just set to default BTW in the netherlands.
 */
 function invc_get_tax_rates($product_obj, $order){
-    /* WC_Tax object */
-    $taxes = new WC_Tax();
-    $tax_rates = $taxes->find_rates(
-        array(
-            "tax_class" => $product_obj->get_tax_class(),
-            "country" => $order->billing_country,
-            "postcode" => $order->billing_postcode
-        ));
-
     /* return the first one, should be the only one that matches best */
-    $tax_percentage = 21.00;
-    if (!empty($tax_rates)){
-        $first_index = reset($tax_rates);
-        $tax_percentage = $first_index['rate'];
-    }
-    return $tax_percentage;
+    return 21.00;
 }
 
 /**
@@ -154,7 +144,7 @@ function invc_generate_productlines($order){
 
     $s_line = array(
         "amount" => "1",
-        "description" => "Send costs",
+        "description" => "Shipping costs",
         "tax_rate" => number_format((float)invc_get_shiptax_rates(),2,'.',''),
         "price" => $order->get_shipping(),
     );

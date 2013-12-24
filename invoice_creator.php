@@ -13,15 +13,15 @@
  * Check if WooCommerce is active
  **/
 if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
-        'woocommerce.php',  apply_filters('active_plugins',
-            get_option('active_plugins')))) {
+    'woocommerce.php',  apply_filters('active_plugins',
+        get_option('active_plugins')))) {
 
+    global $SETTINGS_FILE;
+    $SETTINGS_FILE = "apifiles/acumulus/settings.php";
     /** This global variable needs to be set to the settings file of
      * your api in the directory apifiles.
      * Note that the location really doesn't matter just that the globals
      * are set correctly */
-    global $SETTINGS_FILE;
-    $SETTINGS_FILE = "apifiles/factuursturen/settings.php";
 
     include_once('invoice_creator-hooks.php');
     function invoice_creator_activation() {
@@ -29,7 +29,7 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
         include_once($SETTINGS_FILE);
 
         /* settings file */
-        global $wpdb, $API_NAME, $TABLE_NAME,
+        global $wpdb, $API_NAME,
             $TABLE_FIELDS, $FUNCTIONS_FILE, $API_FILES_LOCATION;
 
         /* hook to wp_admin settings */
@@ -59,7 +59,7 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
 
         dbDelta($sql);
         /* insert one row */
-        if (!$wpdb->get_var( "SELECT COUNT(*) FROM $table_name"))
+        if (!$wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE api_name = $API_NAME"))
             $rows_affected = $wpdb->insert($table_name, array('exclude_custom_fields' => ''));
 
         /* add action */
@@ -67,7 +67,6 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
     }
 
     function call_send_invoice($order_id){
-
         global $SETTINGS_FILE;
         include_once($SETTINGS_FILE);
         global $API_NAME, $FUNCTIONS_FILE, $API_FILES_LOCATION;
@@ -75,6 +74,7 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
         include_once(strtolower($API_FILES_LOCATION).
             DIRECTORY_SEPARATOR
             . $FUNCTIONS_FILE);
+
         invoice_creator_send_invoice($order_id);
     }
 
@@ -86,7 +86,6 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
 
     register_activation_hook(__FILE__, 'invoice_creator_activation');
     register_uninstall_hook(__FILE__, 'invoice_creator_deactivation');
-    register_deactivation_hook( __FILE__, 'invoice_creator_deactivation' );
     add_action('woocommerce_order_status_completed', 'call_send_invoice');
 }
 

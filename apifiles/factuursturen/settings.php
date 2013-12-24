@@ -11,7 +11,7 @@
  *
  * Author: Richard Torenvliet
  */
-global $API_NAME, $TABLE_NAME, $TABLE_FIELDS, $FUNCTIONS_FILE, $API_FILES_LOCATION;
+global $API_NAME, $TABLE_FIELDS, $FUNCTIONS_FILE, $API_FILES_LOCATION;
 
 $API_FILES_LOCATION = 'apifiles/factuursturen';
 $FUNCTIONS_FILE = "factuursturen-functions.php";

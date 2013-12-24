@@ -12,14 +12,11 @@
  * Author: Richard Torenvliet
  */
 
-global $API_NAME, $TABLE_NAME, $TABLE_FIELDS, $FUNCTIONS_FILE, $API_FILES_LOCATION;
+global $API_NAME, $TABLE_FIELDS, $FUNCTIONS_FILE, $API_FILES_LOCATION;
 
 $API_FILES_LOCATION = 'apifiles/acumulus';
 $FUNCTIONS_FILE = "acumulus-functions.php";
 $API_NAME = "Acumulus";
-
-//$TABLE_NAME = "acumulus";
-
 $TABLE_FIELDS = array(
         "api_url" => "VARCHAR(128) DEFAULT 'https://api.sielsystems.nl/acumulus/stable/' NOT NULL",
         "contract_code" => "VARCHAR(16) DEFAULT '' NOT NULL",

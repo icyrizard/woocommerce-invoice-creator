@@ -165,7 +165,7 @@ function invoice_creator_send_invoice($order_id){
     /* send it #TODO: test if this fails... */
     $request->execute();
     if ($request->getResponseBody()){
-        error_log("Invoice is send", 0);
+        error_log("Invoice is sent", 0);
     }
 }
 

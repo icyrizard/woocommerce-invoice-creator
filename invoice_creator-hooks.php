@@ -5,8 +5,13 @@
 include_once($SETTINGS_FILE);
 include_once("invoice_creator-common.php");
 
+add_action( 'wp_router_generate_routes', 'bl_add_routes', 20);
+
 /* add to admin_menu */
 add_action('admin_menu', 'invoice_creator');
+
+/* add to admin_menu */
+add_action('admin_menu', 'invoice_tester');
 
 /* callback to process POST request invoice */
 add_action('admin_post_invoice', 'process_invoice_options' );
@@ -50,6 +55,22 @@ function process_invoice_options(){
 
     /* redirect to previous page */
     wp_redirect($_SERVER['HTTP_REFERER']);
+}
+
+function invoice_tester(){
+    global $wp_rewrite;
+
+    add_menu_page( "Invoice-creator",
+        "Invoice-creator", "manage_options", "invoice-test",
+        "invoice_test_html", "Test");
+}
+
+function invoice_test_html(){
+    /* check if user is allowd to access */
+    if (!current_user_can('manage_options') )  {
+        wp_die(__('You do not have sufficient permissions to access this page.'));
+    }
+
 }
 
 /* Adds Plugin Options page */
