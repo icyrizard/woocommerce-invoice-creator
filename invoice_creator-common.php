@@ -57,8 +57,23 @@ function invc_get_credentials(){
 * this function is just set to default BTW in the netherlands.
 */
 function invc_get_tax_rates($product_obj, $order){
+    /* WC_Tax object */
+    $taxes = new WC_Tax();
+    $tax_rates = $taxes->find_rates(
+        array(
+            "tax_class" => $product_obj->get_tax_class(),
+            "country" => $order->billing_country,
+            "postcode" => $order->billing_postcode
+        ));
+
     /* return the first one, should be the only one that matches best */
-    return 21.00;
+    $tax_percentage = 21.00;
+    if (!empty($tax_rates)){
+        $first_index = reset($tax_rates);
+        $tax_percentage = $first_index['rate'];
+    }
+
+    return $tax_percentage;
 }
 
 /**
