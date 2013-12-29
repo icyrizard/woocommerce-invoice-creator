@@ -71,19 +71,7 @@ function invc_get_tax_rates($product_obj, $order){
 * @return - percentage (float)
 */
 function invc_get_shiptax_rates(){
-    /* WC_Tax object */
-    global $woocommerce;
-
-    $taxes = new WC_Tax();
-    $woocommerce -> customer = new WC_Customer();
-    $tax_rates = $taxes->get_shipping_tax_rates();
-
-    /*return the first one, should be the only one that matches best */
     $tax_percentage = 21.00;
-    if (!empty($tax_rates)){
-        $first_index = reset($tax_rates);
-        $tax_percentage = $first_index['rate'];
-    }
     return $tax_percentage;
 }
 
