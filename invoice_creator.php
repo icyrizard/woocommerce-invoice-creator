@@ -17,7 +17,7 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
         get_option('active_plugins')))) {
 
     global $SETTINGS_FILE;
-    $SETTINGS_FILE = "apifiles/acumulus/settings.php";
+    $SETTINGS_FILE = "apifiles/exact-online/settings.php";
     /** This global variable needs to be set to the settings file of
      * your api in the directory apifiles.
      * Note that the location really doesn't matter just that the globals
@@ -53,10 +53,8 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
             textinvoice VARCHAR(128) DEFAULT 'Thanks for purchasing, this is your invoice' NOT NULL,
             UNIQUE KEY id (id)
         );";
-        error_log($sql);
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
         dbDelta($sql);
         /* insert one row */
         if (!$wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE api_name = $API_NAME"))
@@ -78,6 +76,20 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
         invoice_creator_send_invoice($order_id);
     }
 
+    function call_sync_products(){
+        error_log("CALLL EO SYNC PRODUCTS ", 0);
+        global $SETTINGS_FILE;
+        include_once($SETTINGS_FILE);
+
+        global $API_NAME, $FUNCTIONS_FILE, $API_FILES_LOCATION;
+        /* include apifiles functions file */
+        include_once(strtolower($API_FILES_LOCATION).
+            DIRECTORY_SEPARATOR
+            . $FUNCTIONS_FILE);
+
+        error_log("CALLL EO SYNC PRODUCTS ", 0);
+        eo_sync_products();
+    }
     function invoice_creator_deactivation() {
         global $wpdb;
         $table = $wpdb->prefix . 'invoice_creator';
@@ -86,7 +98,8 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
 
     register_activation_hook(__FILE__, 'invoice_creator_activation');
     register_uninstall_hook(__FILE__, 'invoice_creator_deactivation');
-    add_action('woocommerce_order_status_completed', 'call_send_invoice');
+    //add_action('woocommerce_order_status_completed', 'call_send_invoice');
+    add_action('wp_head', 'call_sync_products');
 }
 
 ?>

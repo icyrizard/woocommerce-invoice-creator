@@ -90,6 +90,26 @@ function invc_get_shiptax_rates(){
     return $tax_percentage;
 }
 
+function invc_generate_productlist($ids){
+    $cred = invc_get_credentials();
+    $product_lines = array();
+    $product_factory = new WC_Product_Factory();
+
+    $exclude_fields = explode(';', $cred->exclude_custom_fields);
+
+    foreach($ids as $id){
+        $product_obj = $product_factory->get_product($id);
+
+        $p_line = array(
+            "product_id" => $id,
+            "amount" => $p["qty"],
+            "description" => $p["name"],
+            "tax_rate" => number_format((float)invc_get_tax_rates($product_obj, $order), 2, '.', ''),
+            "price" => $product_obj->get_price_excluding_tax(),
+        );
+    }
+}
+
 /* Get important fields from all products inside the order.
  *
  * @param $order - WC_Order ( created by,  new WC_Order($order_id))

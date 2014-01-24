@@ -90,28 +90,44 @@ function eo_create_invoice_body($order){
  * @param xml_string - xml body,
  *               url - url of exact-online.
  * */
-function eo_send_msg($xml_string, $url){
+function eo_send_msg($xml_string, $url, $loc){
+    $xml_string = utf8_encode($xml_string);
+    $verbose = fopen('php://temp', 'rw+');
+
     $baseurl = "https://start.exactonline.nl";
     $username = "info@sponiza.nl";
     $password = "Nhu22VaQ";
     $applicationkey = "07cae1bf-27a1-4c6a-a4a3-572ae7866bc6"; /* The application key with or without curly braces */
     $division = "545462";  /* Check the result of the first call to XMLDivisions.aspx to see all available divisions */
-    $cookiefile = "cookie.txt";
+    $cookiefile = "$loc/cookie.txt";
     #$crtbundlefile = "cacert.pem"; /* this can be downloaded from http://curl.haxx.se/docs/caextract.html */
     /* Logging in */
     $header[1] = "Cache-Control: private";
     $header[2] = "Connection: Keep-Alive";
     $url= "$baseurl/docs/XMLUpload.aspx?Topic=Items&output=1&ApplicationKey=$applicationkey";
-    $xml_string = utf8_encode($xml_string);
+    $clearses= "$baseurl/docs/ClearSession.aspx?Division=$division&Remember=3";
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_VERBOSE, true);
+    curl_setopt($ch, CURLOPT_STDERR, $verbose);
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "xmlstring=$xml_string");
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiefile);
     curl_setopt($ch, CURLOPT_POSTFIELDS, array("_UserName_"=>"$username", "_Password_"=>"$password"));
-    if(curl_exec($ch) === false){
-        throw new Exception("Error in msg sending. Make sure host is available.");
-    }
+    curl_setopt($ch, CURLOPT_URL, $clearses);
+    curl_exec($ch);
+    $div = "$baseurl/docs/XMLDivisions.aspx";
+    curl_setopt($ch, CURLOPT_URL, $div);
+    curl_exec($ch);
+
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $xml_string);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_exec($ch);
+
+    rewind($verbose);
+    $verboseLog = stream_get_contents($verbose);
+    elog($verboseLog);
+    //"Verbose information:\n<pre>", htmlspecialchars($verboseLog), "</pre>\n";
 
     curl_close($ch);
 }
@@ -294,15 +310,14 @@ function eo_sync_products(){
     $xml .= "</Items>";
     $xml .= '<Topics>
         <Topic code="Items"
-        ts_d="0x000000001A16C752" count="1" pagesize="250"/>
+        ts_d="0x000000001A16C752" count="2" pagesize="250"/>
         </Topics>
         <Messages/></eExact>';
 
-
     $loc = "/home/richard/Documents/programming/rizit/wordpress/wp-content/plugins/woocommerce-invoice-creator/apifiles/exact-online";
     file_put_contents("$loc/sample_items.xml", formatXMLString($xml));
-    eo_send_msg($xml, "");
 
+    eo_send_msg(utf8_encode($xml), '', $loc);
 
     //$loop = new WP_Query( $args );
     //
