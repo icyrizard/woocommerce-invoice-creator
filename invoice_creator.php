@@ -44,6 +44,24 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
             $fields .= $name ." ". $additional . ',';
         }
 
+        error_log("FIELDS", 0);
+        error_log(var_export($fields, true), 0);
+        /* insert one row */
+
+        $res = $wpdb->get_var("SELECT COUNT(*) FROM $table_name
+                WHERE api_name = '$API_NAME'");
+
+        error_log("RESULT! \n");
+        error_log(var_export($res, true), 0);
+        $query = "SELECT COUNT(*) FROM $table_name
+                WHERE api_name = '$API_NAME'";
+        error_log(var_export($query, true), 0);
+
+        if ($wpdb->get_var("SELECT COUNT(*) FROM $table_name
+                WHERE api_name = $API_NAME")){
+            error_log("returning \n");
+            return;
+        }
         /* create settings table */
         $sql = "CREATE TABLE IF NOT EXISTS $table_name (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -57,7 +75,7 @@ if (in_array('woocommerce' . DIRECTORY_SEPARATOR.
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
         /* insert one row */
-        if (!$wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE api_name = $API_NAME"))
+        if ($wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE api_name = '$API_NAME'") == 0)
             $rows_affected = $wpdb->insert($table_name, array('exclude_custom_fields' => ''));
 
         /* add action */
